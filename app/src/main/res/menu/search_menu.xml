@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/home_bottom_memo"
+        android:title="备忘录"
+        android:icon="@drawable/ic_book"
+        android:checked="false"/>
+
+    <item android:id="@+id/home_bottom_record"
+        android:title="录音"
+        android:icon="@drawable/ic_record"
+        android:checked="false"/>
+
+    <item android:id="@+id/home_bottom_search"
+        android:title="搜索"
+        android:icon="@drawable/ic_search"
+        android:checked="true"></item>
+</menu>
