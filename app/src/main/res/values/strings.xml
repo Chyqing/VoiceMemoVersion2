@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Memorandum</string>
+
+    <string name="message1">账号或者密码不能为空</string>
+    <string name="message2">注册成功</string>
+    <string name="message3">用户名已存在</string>
+    <string name="press_login_button1">欢迎登录！</string>
+    <string name="press_login_button2">登录失败！</string>
+
+    <string name="shared_preferences_file_name">sp_login</string>
+    <string name="login_account_name">login_account_name</string>
+    <string name="login_password">login_password</string>
+    <string name="login_remember_password">login_remember_password</string>
 </resources>
