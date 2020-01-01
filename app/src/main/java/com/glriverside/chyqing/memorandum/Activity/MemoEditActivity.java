@@ -113,8 +113,8 @@ public class MemoEditActivity extends AppCompatActivity {
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_TITLE, title);
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_CONTENT_PATH, content);
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_DATE, time);
-            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_ALARM, isAlarm);
-            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_TODO, isToDo);
+            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_ALARM, isAlarm.toString());
+            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_TODO, isToDo.toString());
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_ALARM_TIME, alarmTime);
 
             /*if (isAlarm == true) {
@@ -164,12 +164,9 @@ public class MemoEditActivity extends AppCompatActivity {
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_TITLE, title);
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_CONTENT_PATH, content);
             contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_DATE, time);
-            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_ALARM,isAlarm);
-            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_TODO, isToDo);
+            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_ALARM,isAlarm.toString());
+            contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_TODO, isToDo.toString());
 
-            /*if(isAlarm == true){
-                contentValues.put(MemoContract.MemoEntry.COLUMN_NAME_ALARM_TIME, alarmTime);
-            }*/
 
             //更新数据库
             db.update(MemoContract.MemoEntry.TABLE_NAME, contentValues,
@@ -262,25 +259,14 @@ public class MemoEditActivity extends AppCompatActivity {
         ivAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*isAlarm = !isAlarm;
-                if (isAlarm == true){
-                    setAlarmDate();
-                }else{
-                    alarmTime = null;
-                }*/
-                setAlarmDate();
+                initAlarm();
             }
         });
 
         ivToDo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isToDo = !isToDo;
-                if (isToDo ==true){
-                    //后台显示
-                }else{
-                    //不显示
-                }
+                initTodo();
             }
         });
     }
@@ -296,7 +282,7 @@ public class MemoEditActivity extends AppCompatActivity {
             memoValues.setContent(intent.getStringExtra(MemoContract.MemoEntry.COLUMN_NAME_CONTENT_PATH));
             memoValues.setAlarm(Boolean.valueOf(intent.getStringExtra(MemoContract.MemoEntry.COLUMN_NAME_ALARM)));
             memoValues.setAlarmTime(intent.getStringExtra(MemoContract.MemoEntry.COLUMN_NAME_ALARM_TIME));
-            //memoValues.setToDo(Boolean.valueOf(intent.getStringExtra(MemoContract.MemoEntry.COLUMN_NAME_TODO)));
+            memoValues.setToDo(Boolean.valueOf(intent.getStringExtra(MemoContract.MemoEntry.COLUMN_NAME_TODO)));
             memoValues.setId(Integer.valueOf(intent.getStringExtra(MemoContract.MemoEntry._ID)));
 
             etTitle.setText(memoValues.getTitle());
@@ -307,6 +293,18 @@ public class MemoEditActivity extends AppCompatActivity {
             isToDo = memoValues.getToDo();
 
             edit_toolbar_text.setText(memoValues.getTitle());
+            if (isAlarm == false){
+                ivAlarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
+            }else{
+                ivAlarm.setImageResource(R.drawable.ic_alarm_on_black_24dp);
+            }
+
+            if (isToDo == false){
+                ivToDo.setImageResource(R.drawable.ic_assignment_turned_in_light_24dp);
+            }else{
+                ivToDo.setImageResource(R.drawable.ic_assignment_turned_in_black_24dp);
+            }
+
         }
 
         ivSave.setOnClickListener(modification);
@@ -323,13 +321,14 @@ public class MemoEditActivity extends AppCompatActivity {
         ivAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                isAlarm = !isAlarm;
-                if (isAlarm == true){
-                    setAlarmDate();
-                }else{
-                    alarmTime = null;
-                }
+                initAlarm();
+            }
+        });
 
+        ivToDo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initTodo();
             }
         });
     }
@@ -380,9 +379,11 @@ public class MemoEditActivity extends AppCompatActivity {
                         AlarmManager alarmManager = (AlarmManager)getSystemService(Service.ALARM_SERVICE);
                         alarmManager.set(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pendingIntent);
                         alarmTime = longTime;
-                        Toast.makeText(MemoEditActivity.this, "设置成功"
-                                        ,Toast.LENGTH_SHORT).show();
-
+                        isAlarm = true;
+                        Toast.makeText(MemoEditActivity.this,
+                                "开启定时提醒",
+                                Toast.LENGTH_SHORT).show();
+                        ivAlarm.setImageResource(R.drawable.ic_alarm_on_black_24dp);
                     }
                 }, currentTime.get(Calendar.HOUR_OF_DAY)
                 , currentTime.get(Calendar.MINUTE)
@@ -390,18 +391,26 @@ public class MemoEditActivity extends AppCompatActivity {
         timePickerDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                alarmTime = null;
-                memoValues.setAlarmTime(alarmTime);
-                memoValues.setAlarm(false);
+                isAlarm = false;
+                Toast.makeText(MemoEditActivity.this,
+                        "取消定时提醒",
+                        Toast.LENGTH_SHORT).show();
+                ivAlarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
             }
         });
 
-        if (alarmTime.equals(null)){
-            ivAlarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
-        }else {
-            timePickerDialog.show();
+        timePickerDialog.show();
+        /*if (isAlarm ==true){
+            Toast.makeText(MemoEditActivity.this,
+                    "开启定时提醒",
+                    Toast.LENGTH_SHORT).show();
             ivAlarm.setImageResource(R.drawable.ic_alarm_on_black_24dp);
-        }
+        }else{
+            Toast.makeText(MemoEditActivity.this,
+                    "取消定时提醒",
+                    Toast.LENGTH_SHORT).show();
+            ivAlarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
+        }*/
 
     }
 
@@ -541,4 +550,57 @@ public class MemoEditActivity extends AppCompatActivity {
         }
     };
 
+    public void initAlarm(){
+        if (isAlarm == false){
+            new AlertDialog.Builder(MemoEditActivity.this)
+                    .setTitle("提示框")
+                    .setMessage("是否设置定时提醒？")
+                    .setPositiveButton("设置", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            setAlarmDate();
+                        }
+                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    isAlarm = false;
+                }
+            }).show();
+        }else {
+            new AlertDialog.Builder(MemoEditActivity.this)
+                    .setTitle("提示框")
+                    .setMessage("是否取消定时提醒？")
+                    .setPositiveButton("重新设置", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int which) {
+                            setAlarmDate();
+                        }
+                    }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    isAlarm = false;
+                    Toast.makeText(MemoEditActivity.this,
+                            "取消定时提醒",
+                            Toast.LENGTH_SHORT).show();
+                    ivAlarm.setImageResource(R.drawable.ic_alarm_off_black_24dp);
+                }
+            }).show();
+        }
+
+    }
+
+    public void initTodo(){
+        isToDo = !isToDo;
+        if (isToDo ==true){
+            Toast.makeText(MemoEditActivity.this,
+                    "加入待办事项提醒",
+                    Toast.LENGTH_SHORT).show();
+            ivToDo.setImageResource(R.drawable.ic_assignment_turned_in_black_24dp);
+        }else{
+            Toast.makeText(MemoEditActivity.this,
+                    "取消加入待办事项提醒",
+                    Toast.LENGTH_SHORT).show();
+            ivToDo.setImageResource(R.drawable.ic_assignment_turned_in_light_24dp);
+        }
+    }
 }

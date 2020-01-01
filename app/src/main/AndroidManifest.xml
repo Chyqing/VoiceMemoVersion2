@@ -3,31 +3,18 @@
     package="com.glriverside.chyqing.memorandum">
 
     <!-- 连接网络权限，用于执行云端语音能力 -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 获取手机录音机使用权限，听写、识别、语义理解需要用到此权限 -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- 读取网络信息状态 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 获取当前wifi状态 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!-- 允许程序改变网络连接状态 -->
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <!-- 读取手机信息权限 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!-- 读取联系人权限，上传联系人需要用到此权限 -->
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <!-- 外存储写入权限， 构建语法需要用到此权限 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 获取手机录音机使用权限，听写、识别、语义理解需要用到此权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 读取网络信息状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- 获取当前wifi状态 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- 允许程序改变网络连接状态 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- 读取手机信息权限 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 读取联系人权限，上传联系人需要用到此权限 -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- 外存储写入权限， 构建语法需要用到此权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-
-    <!--震动-->
-    <uses-permission android:name="android.permission.VIBRATE"/>
-
-    <!--闪光-->
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
-
-    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 震动 -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 闪光 -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
         android:allowBackup="true"
@@ -36,44 +23,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".Service.VoiceMemoService"
+            android:enabled="true"
+            android:exported="false"></service>
 
-        <activity android:name=".Activity.MainActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        </activity>
-
-        <activity android:name=".Activity.MemoActivity"
+        <activity
+            android:name=".Activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".Activity.MemoActivity"
             android:launchMode="singleTask"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".Activity.MemoEditActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        </activity>
-
-        <activity android:name=".Activity.RecordActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:launchMode="singleInstance">
-
-        </activity>
-
-        <activity android:name=".Activity.SearchActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:launchMode="singleInstance">
-
-        </activity>
-
-        <activity android:name=".Activity.SignUpActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:launchMode="singleInstance">
-
-        </activity>
-
+        <activity
+            android:name=".Activity.MemoEditActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".Activity.RecordActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".Activity.SearchActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
+        <activity
+            android:name=".Activity.SignUpActivity"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

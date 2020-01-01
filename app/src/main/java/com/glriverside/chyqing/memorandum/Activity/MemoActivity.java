@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.AttributeSet;
@@ -30,6 +31,7 @@ import android.widget.ListView;
 import com.glriverside.chyqing.memorandum.Adapter.MemoAdapter;
 import com.glriverside.chyqing.memorandum.Contract.MemoContract;
 import com.glriverside.chyqing.memorandum.Manager.MemoOpenHelper;
+import com.glriverside.chyqing.memorandum.Service.VoiceMemoService;
 import com.glriverside.chyqing.memorandum.Values.MemoValues;
 import com.glriverside.chyqing.memorandum.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -56,8 +58,11 @@ public class MemoActivity extends AppCompatActivity implements DialogInterface.O
     private BottomNavigationView bottomNavigationView;
     private MemoAdapter memoAdapter;
     private AlarmManager alarmManager;
+    List<MemoValues> memoValuesList;
 
     public static final String MODEL = "false";
+    public static final String DATA_URI =
+            "com.glriverside.chyqing.memorandum.Activity.DATA_URI";
 
     public static MemoActivity context = null;
     private MediaPlayer player = new MediaPlayer();
@@ -91,7 +96,7 @@ public class MemoActivity extends AppCompatActivity implements DialogInterface.O
         alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
         initDb();
-
+        initNotification();
         add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,9 +133,9 @@ public class MemoActivity extends AppCompatActivity implements DialogInterface.O
                 intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_TITLE, memoValues.getTitle());
                 intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_DATE, memoValues.getDate());
                 intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_CONTENT_PATH, memoValues.getContent());
-                intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_ALARM, memoValues.getAlarm());
+                intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_ALARM, ""+memoValues.getAlarm());
                 intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_ALARM_TIME, memoValues.getAlarmTime());
-                // intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_TODO, memoValues.getToDo().toString());
+                intent.putExtra(MemoContract.MemoEntry.COLUMN_NAME_TODO, ""+memoValues.getToDo());
                 intent.putExtra(MemoActivity.MODEL, "true");
                 startActivity(intent);
             }
@@ -218,14 +223,14 @@ public class MemoActivity extends AppCompatActivity implements DialogInterface.O
 
     public void initDb() {
         //创建一个MemoValues的List，保存数据库的数据
-        List<MemoValues> memoValuesList = new ArrayList<>();
+        memoValuesList = new ArrayList<>();
 
         //获取一个可读的数据库对象
         SQLiteDatabase db = memoOpenHelper.getReadableDatabase();
 
         //查询
         Cursor cursor = db.query(MemoContract.MemoEntry.TABLE_NAME, null, null,
-                null, null, null, null);
+                null, null, null, MemoContract.MemoEntry.COLUMN_NAME_DATE + " DESC ");
         if (cursor.moveToFirst()) {
             MemoValues values;
             while (!cursor.isAfterLast()) {
@@ -238,12 +243,10 @@ public class MemoActivity extends AppCompatActivity implements DialogInterface.O
                 values.setTitle(cursor.getString(cursor.getColumnIndex(MemoContract.MemoEntry.COLUMN_NAME_TITLE)));
                 values.setDate(cursor.getString(cursor.getColumnIndex(MemoContract.MemoEntry.COLUMN_NAME_DATE)));
                 values.setContent(cursor.getString(cursor.getColumnIndex(MemoContract.MemoEntry.COLUMN_NAME_CONTENT_PATH)));
+                values.setAlarm(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(MemoContract.MemoEntry.COLUMN_NAME_ALARM))));
+                values.setAlarmTime(cursor.getString(cursor.getColumnIndex(MemoContract.MemoEntry.COLUMN_NAME_ALARM_TIME)));
+                values.setToDo(Boolean.parseBoolean(cursor.getString(cursor.getColumnIndex(MemoContract.MemoEntry.COLUMN_NAME_TODO))));
 
-                //是否提醒
-
-                //是否为待办事件
-
-                //存入memoValuesList中
                 memoValuesList.add(values);
                 cursor.moveToNext();
 
@@ -266,6 +269,23 @@ public class MemoActivity extends AppCompatActivity implements DialogInterface.O
     }
 
     public void initAlarm(){
+
+    }
+
+    public void initNotification(){
+        Intent serviceIntent = new Intent(MemoActivity.this, VoiceMemoService.class);
+
+        for (MemoValues i : memoValuesList){
+            if (i.getToDo() == true){
+                serviceIntent.putExtra("TITLE", i.getTitle());
+                serviceIntent.putExtra("CONTENT", i.getContent());
+                serviceIntent.putExtra("DATE", i.getDate());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                }
+                return;
+            }
+        }
 
     }
 }
